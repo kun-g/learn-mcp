@@ -153,5 +153,15 @@ def get_operation(name: str) -> str:
             return json.dumps(operation, indent=2, ensure_ascii=False)
     return json.dumps({"error": "Operation not found"}, indent=2, ensure_ascii=False)
 
+@mcp.tool()
+async def next_version(ctx: Context) -> str:
+    """
+    Get the next version of the calculator server.
+    """
+    cfg = await ctx.read_resource("data://config")
+    cfg = json.loads(cfg[0].content)
+    v = cfg["version"]
+    return f"{v.split('.')[0]}.{int(v.split('.')[1]) + 1}.0"
+
 if __name__ == "__main__":
     mcp.run()
