@@ -4,6 +4,11 @@
       "command": "uv",
       "args": ["run", "calculator.py"],
       "cwd": "/Users/guokun/repo/learn-mcp"
+    },
+    "prompt-flow": {
+      "command": "uv",
+      "args": ["run", "prompt_flow.py"],
+      "cwd": "/Users/guokun/repo/learn-mcp"
     }
   }
 }
