@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "calculator": {
+      "command": "uv",
+      "args": ["run", "calculator.py"],
+      "cwd": "/Users/guokun/repo/learn-mcp"
+    }
+  }
+}
