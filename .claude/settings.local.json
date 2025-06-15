@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(npm install:*)",
-      "mcp__calculator__calculate"
+      "mcp__calculator__calculate",
+      "Bash(uv sync:*)",
+      "Bash(uv run:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": []
   },
