@@ -1,5 +1,6 @@
 from fastmcp import FastMCP
 from typing import Union
+import json
 
 mcp = FastMCP(
     name="CalculatorServer",
@@ -66,6 +67,83 @@ def calculate(method: str, args: list[float]) -> Union[int, float]:
         return int(result)
     return result
 
+oprations = [
+    {
+        "name": "add",
+        "description": "Addition operation",
+        "min_args": 2,
+        "max_args": None,
+        "example": "calculate('add', [1, 2, 3]) → 6"
+    },
+    {
+        "name": "subtract", 
+        "description": "Subtraction operation (left-to-right)",
+        "min_args": 2,
+        "max_args": None,
+        "example": "calculate('subtract', [10, 3, 2]) → 5"
+    },
+    {
+        "name": "multiply",
+        "description": "Multiplication operation",
+        "min_args": 2,
+        "max_args": None,
+        "example": "calculate('multiply', [2, 3, 4]) → 24"
+    },
+    {
+        "name": "divide",
+        "description": "Division operation (left-to-right)",
+        "min_args": 2,
+        "max_args": None,
+        "example": "calculate('divide', [100, 5, 2]) → 10"
+    },
+    {
+        "name": "power",
+        "description": "Power operation (base^exponent)",
+        "min_args": 2,
+        "max_args": 2,
+        "example": "calculate('power', [2, 3]) → 8"
+    },
+    {
+        "name": "modulo",
+        "description": "Modulo operation (a % b)",
+        "min_args": 2,
+        "max_args": 2,
+        "example": "calculate('modulo', [10, 3]) → 1"
+    }
+]
+
+@mcp.resource("data://config")
+def get_config() -> str:
+    """
+    提供计算器服务器的配置信息
+    """
+    config = {
+        "name": "CalculatorServer",
+        "version": "1.0.0",
+        "description": "MCP Calculator Server supporting basic mathematical operations",
+        "supported_operations": list(map(lambda x: x["name"], oprations)),
+        "features": [
+            "Integer optimization (returns int when result is whole number)",
+            "Error handling for division by zero",
+            "Support for both integer and float inputs",
+            "Argument validation for each operation"
+        ],
+        "author": "MCP Learning Project",
+        "framework": "FastMCP",
+        "python_version": ">=3.10"
+    }
+    
+    return json.dumps(config, indent=2, ensure_ascii=False)
+
+@mcp.resource("data://operation/{name}")
+def get_operation(name: str) -> str:
+    """
+    Get the operation with the given name.
+    """
+    for operation in oprations:
+        if operation["name"] == name:
+            return json.dumps(operation, indent=2, ensure_ascii=False)
+    return json.dumps({"error": "Operation not found"}, indent=2, ensure_ascii=False)
 
 if __name__ == "__main__":
     mcp.run()
