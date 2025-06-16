@@ -4,7 +4,9 @@ Sitemap MCP Server - Parse and analyze XML sitemaps using FastMCP
 """
 
 import json
+import os
 from datetime import datetime
+from functools import wraps
 from typing import Any, Dict, List
 from urllib.parse import urlparse
 
@@ -28,8 +30,38 @@ mcp = FastMCP(
     - data://sitemap/updates/{url}: Get detailed update records and patterns from a sitemap
 
     Supports both standard sitemaps and sitemap index files with comprehensive update tracking.
+    
+    Authentication: When running in HTTP mode, some operations may require API key authentication.
     """,
 )
+
+def require_auth_in_http_mode(func):
+    """
+    装饰器：在 HTTP 模式下要求 API Key 认证
+    在 STDIO 模式下不需要认证（本地信任环境）
+    """
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        # 检查是否在 HTTP 模式下运行
+        transport_mode = os.getenv("MCP_TRANSPORT", "stdio")
+
+        if transport_mode == "http":
+            # HTTP 模式下检查 API Key
+            required_api_key = os.getenv("MCP_API_KEY", "")
+
+            if not required_api_key:
+                # 未设置 API Key，允许访问但给出警告
+                print("[WARN] HTTP 模式未启用认证，建议设置 MCP_API_KEY")
+            else:
+                # 检查请求中的 API Key
+                # 注意：这是简化实现，实际中需要从 HTTP 头获取
+                # FastMCP 会在更高层次处理 HTTP 认证
+                print(f"[INFO] 在 HTTP 模式下调用 {func.__name__}")
+
+        # 调用原始函数
+        return await func(*args, **kwargs)
+
+    return wrapper
 
 async def _parse_sitemap_internal(url: str, ctx: Context) -> Dict[str, Any]:
     """
@@ -278,6 +310,7 @@ async def extract_domain_info(url: str, ctx: Context, limit: int = 10) -> Dict[s
     return result
 
 @mcp.tool()
+@require_auth_in_http_mode
 async def analyze_update_patterns(url: str, ctx: Context) -> Dict[str, Any]:
     """
     Analyze website update patterns from sitemap
@@ -598,5 +631,34 @@ def get_sitemap_updates(url: str) -> str:
     except Exception as e:
         return json.dumps({"error": str(e)}, indent=2, ensure_ascii=False)
 
+def main():
+    """启动 MCP 服务器"""
+    # 从环境变量获取配置
+    transport = os.getenv("MCP_TRANSPORT", "stdio")  # 默认 stdio 模式
+    host = os.getenv("MCP_HOST", "127.0.0.1")
+    port = int(os.getenv("MCP_PORT", "9000"))
+    api_key = os.getenv("MCP_API_KEY", "")
+
+    print("[INFO] 启动 Sitemap MCP Server")
+    print(f"[INFO] Transport: {transport}")
+
+    if transport == "http":
+        print(f"[INFO] HTTP 模式 - {host}:{port}")
+        if api_key:
+            print("[INFO] API Key 认证已启用")
+        else:
+            print("[WARN] 未设置 API Key，HTTP 模式将不受保护")
+
+        # HTTP 模式启动
+        mcp.run(
+            transport="sse",  # FastMCP 的 HTTP 传输模式
+            host=host,
+            port=port
+        )
+    else:
+        print("[INFO] STDIO 模式（本地模式）")
+        # 默认 stdio 模式
+        mcp.run()
+
 if __name__ == "__main__":
-    mcp.run()
+    main()

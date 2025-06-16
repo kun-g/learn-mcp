@@ -6,7 +6,8 @@
       "Bash(uv sync:*)",
       "Bash(uv run:*)",
       "Bash(mkdir:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(gh issue view:*)"
     ],
     "deny": []
   },
