@@ -120,5 +120,6 @@ Before any commit, ensure:
 - **Feature commits**: `feat: implement feature X`
 - **Fix commits**: `fix: resolve issue with Y`
 - **Refactor commits**: `refactor: improve code structure`
+- USE Chinese
 
 This workflow ensures reliable, maintainable code with comprehensive test coverage.
