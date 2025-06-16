@@ -14,13 +14,13 @@ from fastmcp import Context, FastMCP
 mcp = FastMCP(
     name="SitemapServer",
     instructions="""Sitemap parser server for analyzing XML sitemaps.
-    
+
     Available tools:
     - parse_sitemap: Parse sitemap XML and extract URLs
     - analyze_sitemap: Get detailed statistics about a sitemap
     - validate_sitemap: Check if sitemap follows XML sitemap protocol
     - extract_domain_info: Get domain information from sitemap URLs
-    
+
     Supports both standard sitemaps and sitemap index files.
     """,
 )
@@ -68,10 +68,10 @@ async def _parse_sitemap_internal(url: str, ctx: Context) -> Dict[str, Any]:
 async def parse_sitemap(url: str, ctx: Context) -> Dict[str, Any]:
     """
     Parse a sitemap XML from URL and extract all URLs
-    
+
     Args:
         url: Sitemap URL to parse
-        
+
     Returns:
         Dictionary containing parsed URLs and metadata
     """
@@ -87,10 +87,10 @@ async def parse_sitemap(url: str, ctx: Context) -> Dict[str, Any]:
 async def analyze_sitemap(url: str, ctx: Context) -> Dict[str, Any]:
     """
     Analyze sitemap and provide detailed statistics
-    
+
     Args:
         url: Sitemap URL to analyze
-        
+
     Returns:
         Detailed analysis including URL patterns, domains, etc.
     """
@@ -145,10 +145,10 @@ async def analyze_sitemap(url: str, ctx: Context) -> Dict[str, Any]:
 async def validate_sitemap(url: str, ctx: Context) -> Dict[str, Any]:
     """
     Validate sitemap against XML sitemap protocol standards
-    
+
     Args:
         url: Sitemap URL to validate
-        
+
     Returns:
         Validation results with issues and recommendations
     """
@@ -217,11 +217,11 @@ async def validate_sitemap(url: str, ctx: Context) -> Dict[str, Any]:
 async def extract_domain_info(url: str, ctx: Context, limit: int = 10) -> Dict[str, Any]:
     """
     Extract and analyze domain information from sitemap URLs
-    
+
     Args:
         url: Sitemap URL to analyze
         limit: Maximum number of sample URLs to return per domain
-        
+
     Returns:
         Domain analysis with sample URLs
     """
